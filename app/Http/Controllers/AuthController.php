@@ -11,7 +11,7 @@ class AuthController extends Controller
     /**
      * Register a new user
      * 
-     * @param \Illuminate\Http\Request $requet
+     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
     public function register(Request $request)
@@ -36,5 +36,39 @@ class AuthController extends Controller
         ];
 
         return response($response, 201);
+    }
+
+    /**
+     * User login
+     * 
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\Response
+     */
+    public function login(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|string',
+            'password' => 'required|string',
+        ]);
+
+        # Receives user data if the email exists in repository.
+        $user = User::where('email', $request->email)->first();
+
+        # Validate user and password
+        if (!$user || !Hash::check($request->password, $user->password)) {
+            return response([
+                'message' => 'Invalid credentials'
+            ], 401);
+        }
+
+        $token = $user->createToken('primeirotoken')->plainTextToken;
+
+        $response = [
+            'user' => $user,
+            'token' => $token,
+        ];
+
+        return response($response, 201);
+
     }
 }
