@@ -57,7 +57,7 @@ class AuthController extends Controller
         # Validate user and password
         if (!$user || !Hash::check($request->password, $user->password)) {
             return response([
-                'message' => 'Invalid credentials'
+                'message' => 'Invalid credentials.'
             ], 401);
         }
 
@@ -70,5 +70,19 @@ class AuthController extends Controller
 
         return response($response, 201);
 
+    }
+
+    /**
+     * User Logout
+     * 
+     * @return \Illuminate\Http\Response
+     */
+    public function logout()
+    {
+        auth()->user()->tokens()->delete();
+
+        return [
+            'message' => 'Logout successfully and tokens deleted.'
+        ];
     }
 }
